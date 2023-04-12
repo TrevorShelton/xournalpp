@@ -242,11 +242,15 @@ void ZoomControl::fireZoomChanged() {
         this->zoom = this->zoomMax;
     }
 
-    for (ZoomListener* z: this->listener) { z->zoomChanged(); }
+    for (ZoomListener* z: this->listener) {
+        z->zoomChanged();
+    }
 }
 
 void ZoomControl::fireZoomRangeValueChanged() {
-    for (ZoomListener* z: this->listener) { z->zoomRangeValuesChanged(); }
+    for (ZoomListener* z: this->listener) {
+        z->zoomRangeValuesChanged();
+    }
 }
 
 auto ZoomControl::getZoom() const -> double { return this->zoom; }
@@ -281,12 +285,15 @@ auto ZoomControl::updateZoomFitValue(size_t pageNo) -> bool {
     }
 
     Rectangle widget_rect = getVisibleRect();
-    double zoom_fit_width = widget_rect.width / (page->getWidth() + 20.0);
-    if (zoom_fit_width < this->zoomMin || zoom_fit_width > this->zoomMax) {
+    double zoom_width = widget_rect.width / (page->getWidth() + 20.0);
+    double zoom_height = widget_rect.height / (page->getHeight() + 20.0);
+    double zoom_fit = (zoom_width <= zoom_height) ? zoom_width : zoom_height;
+
+    if (zoom_fit < this->zoomMin || zoom_fit > this->zoomMax) {
         return false;
     }
 
-    this->zoomFitValue = zoom_fit_width;
+    this->zoomFitValue = zoom_fit;
     fireZoomRangeValueChanged();
     if (this->isZoomFitMode() && !this->zoomPresentationMode) {
         this->zoomFit();
